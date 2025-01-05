@@ -404,7 +404,7 @@ notebook.add(encryption_frame, text="Encryption/Decryption")
 # Welcome Label
 welcome_label = tk.Label(
     encryption_frame,
-    text='''B́̿͘ɪ̈́͌͐ᴏ̀̈́̾C̾́͝ʀ͑́̕ʏ͒̾͑ᴘ͋͌ᴛ̿̓̒''',
+    text='''BioCrypt''',
     fg=var2["fg"],
     bg=var1["bg"], 
     font=("Courier", 75, "bold")
