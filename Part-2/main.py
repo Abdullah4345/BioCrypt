@@ -20,15 +20,19 @@ import threading
 
 
 selected_value = None
-var1 = None  
-var2 = None  
+var1 = None
+var2 = None
+
 
 def restart_application():
     """Restarts the application."""
     python = sys.executable
     os.execl(python, python, *sys.argv)
 
-CSV_FILE = "theme_settings.csv"  
+
+CSV_FILE = "theme_settings.csv"
+
+
 def open_settings():
     global selected_value, var1, var2
 
@@ -39,96 +43,98 @@ def open_settings():
 
     label = tk.Label(settings_window, text="Choose a theme:")
     label.pack(pady=10)
-    
-    options = ["Default", "Dark", "Arcane", "2077", "Fallout", "Light", "Pink", "JINX", "VI", "JINX-CLOUD", "High Contrast 1", "High Contrast 2"]
+
+    options = ["Default", "Dark", "Arcane", "2077", "Fallout", "Light",
+               "Pink", "JINX", "VI", "JINX-CLOUD", "High Contrast 1", "High Contrast 2"]
     drop_down = ttk.Combobox(settings_window, values=options, state="readonly")
     drop_down.pack(pady=10)
-    
+
     drop_down.set(options[0])
 
     def save_selection():
         global selected_value, var1, var2
         selected_value = drop_down.get()
         update_variables(selected_value)
-        save_to_csv(var1, var2)  
+        save_to_csv(var1, var2)
 
-      
-        response = messagebox.askyesno("Restart Required", "You need to restart the application to apply the theme. Do you want to restart?")
-        if response: 
+        response = messagebox.askyesno(
+            "Restart Required", "You need to restart the application to apply the theme. Do you want to restart?")
+        if response:
             restart_application()
         else:
             settings_window.destroy()
 
-
-    save_button = tk.Button(settings_window, text="Save Selection", command=save_selection)
+    save_button = tk.Button(
+        settings_window, text="Save Selection", command=save_selection)
     save_button.pack(pady=20)
 
     settings_window.mainloop()
+
+
 def update_variables(value):
     global var1, var2
     if value == "Default":
-        var1 = {"bg": "#05012E"}  
-        var2 = {"fg": "#00FF00"}  
-        
+        var1 = {"bg": "#05012E"}
+        var2 = {"fg": "#00FF00"}
+
     elif value == "Dark":
-        var1 = {"bg": "#030202"}  
-        var2 = {"fg": "#2e2e2e"}  
+        var1 = {"bg": "#030202"}
+        var2 = {"fg": "#2e2e2e"}
     elif value == "Arcane":
-        var1 = {"bg": "#060715"}  
-        var2 = {"fg": "#d43c5d"}  
+        var1 = {"bg": "#060715"}
+        var2 = {"fg": "#d43c5d"}
     elif value == "2077":
-        var1 = {"bg": "#081d15"}  
-        var2 = {"fg": "#fefc75"}  
+        var1 = {"bg": "#081d15"}
+        var2 = {"fg": "#fefc75"}
     elif value == "Fallout":
-        var1 = {"bg": "#0c2011"}  
-        var2 = {"fg": "#73df92"}  
+        var1 = {"bg": "#0c2011"}
+        var2 = {"fg": "#73df92"}
     elif value == "Light":
-        var1 = {"bg": "#e4e4e4"}  
-        var2 = {"fg": "#000000"}  
+        var1 = {"bg": "#e4e4e4"}
+        var2 = {"fg": "#000000"}
     elif value == "Pink":
-        var1 = {"bg": "#DE3163"}  
+        var1 = {"bg": "#DE3163"}
         var2 = {"fg": "#FFBF00"}
     elif value == "JINX":
-        var1 = {"bg": "#30588C"}  
-        var2 = {"fg": "#A63F8A"}  
+        var1 = {"bg": "#30588C"}
+        var2 = {"fg": "#A63F8A"}
     elif value == "VI":
-        var1 = {"bg": "#732735"}  
-        var2 = {"fg": "#EC9469"}      
+        var1 = {"bg": "#732735"}
+        var2 = {"fg": "#EC9469"}
     elif value == "JINX-CLOUD":
-        var1 = {"bg": "#9dac9d"}  
-        var2 = {"fg": "#384239"}      
+        var1 = {"bg": "#9dac9d"}
+        var2 = {"fg": "#384239"}
     elif value == "High Contrast 1":
-        var1 = {"bg": "#373b91"}  
-        var2 = {"fg": "#fdfdfd"}      
+        var1 = {"bg": "#373b91"}
+        var2 = {"fg": "#fdfdfd"}
     elif value == "High Contrast 2":
-        var1 = {"bg": "#f7d84c"}  
-        var2 = {"fg": "#21201e"}      
-
-
+        var1 = {"bg": "#f7d84c"}
+        var2 = {"fg": "#21201e"}
 
     print(f"Theme updated - var1: {var1}, var2: {var2}")
 
+
 def save_to_csv(var1, var2):
-    
+
     with open(CSV_FILE, mode='w', newline='') as file:
         writer = csv.writer(file)
-        writer.writerow([var1["bg"], var2["fg"]])  
+        writer.writerow([var1["bg"], var2["fg"]])
+
 
 def read_from_csv():
-    
+
     try:
         with open(CSV_FILE, mode='r') as file:
             reader = csv.reader(file)
             row = next(reader)
-            return row[0], row[1]  
+            return row[0], row[1]
     except FileNotFoundError:
         return "#ffffff", "#000000"
 
 
-
-bg_color, fg_color = read_from_csv()  
-var1 = {"bg": bg_color}  
-var2 = {"fg": fg_color}  
+bg_color, fg_color = read_from_csv()
+var1 = {"bg": bg_color}
+var2 = {"fg": fg_color}
 
 
 baud_rate = 9600
@@ -138,7 +144,7 @@ arduino_connected = False
 def find_arduino_port():
     ports = serial.tools.list_ports.comports()
     for port in ports:
-        if "usbmodem" in port.device: 
+        if "usbmodem" in port.device:
             return port.device
     return None
 
@@ -156,10 +162,11 @@ else:
 
 
 BLOCK_SIZE = 16
-key = None  
+key = None
 
 
 log_file = "operation_logs.csv"
+
 
 def read_from_csv():
 
@@ -169,25 +176,26 @@ def read_from_csv():
             row = next(reader)
             return {"bg": row[0]}, {"fg": row[1]}
     except FileNotFoundError:
-        return {"bg": "#ffffff"}, {"fg": "#000000"}  
+        return {"bg": "#ffffff"}, {"fg": "#000000"}
+
 
 def save_log(log_message):
     """Save only encryption/decryption logs to a CSV file."""
     if log_message[1] not in ["Encrypt", "Decrypt"]:
-        return  
-    
+        return
+
     file_exists = os.path.isfile(log_file)
     with open(log_file, mode='a', newline='') as f:
         writer = csv.writer(f)
         if not file_exists:
-            writer.writerow(["Timestamp", "Operation", "Message"]) 
+            writer.writerow(["Timestamp", "Operation", "Message"])
         writer.writerow(log_message)
 
 
 def debug_log(message, operation_type="General"):
     """Print debug messages and save only encryption/decryption logs."""
     if operation_type not in ["Encrypt", "Decrypt"]:
-        print(f"[DEBUG] {message}")  
+        print(f"[DEBUG] {message}")
         return
 
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -203,12 +211,15 @@ def load_logs():
             reader = csv.DictReader(f)
             for row in reader:
                 if row["Operation"] in ["Encrypt", "Decrypt"]:
-                    logs_treeview.insert("", "end", values=(row["Timestamp"], row["Operation"], row["Message"]))
+                    logs_treeview.insert("", "end", values=(
+                        row["Timestamp"], row["Operation"], row["Message"]))
+
 
 def update_log_treeview(message, operation_type="General"):
     """Update the log display in Treeview."""
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    logs_treeview.insert("", "end", values=(timestamp, operation_type, message))
+    logs_treeview.insert("", "end", values=(
+        timestamp, operation_type, message))
 
 
 def hash_fingerprint_id(fingerprint_id):
@@ -233,12 +244,15 @@ def encrypt_file(file_path, key):
         with open(encrypted_file_path, 'wb') as f:
             f.write(iv + metadata + ciphertext)
 
-        debug_log(f"Encrypted file: {file_path} -> {encrypted_file_path}", operation_type="Encrypt")
-        update_log_treeview(f"File encrypted: {encrypted_file_path}", operation_type="Encrypt")
+        debug_log(
+            f"Encrypted file: {file_path} -> {encrypted_file_path}", operation_type="Encrypt")
+        update_log_treeview(
+            f"File encrypted: {encrypted_file_path}", operation_type="Encrypt")
         return f"File encrypted successfully: {encrypted_file_path}"
     except Exception as e:
         debug_log(f"Error during encryption: {e}", operation_type="Encrypt")
-        update_log_treeview(f"Error during encryption: {e}", operation_type="Encrypt")
+        update_log_treeview(
+            f"Error during encryption: {e}", operation_type="Encrypt")
         return f"Error during encryption: {e}"
 
 
@@ -256,12 +270,15 @@ def decrypt_file(file_path, key):
         with open(decrypted_file_path, 'wb') as f:
             f.write(plaintext)
 
-        debug_log(f"Decrypted file: {file_path} -> {decrypted_file_path}", operation_type="Decrypt")
-        update_log_treeview(f"File decrypted: {decrypted_file_path}", operation_type="Decrypt")
+        debug_log(
+            f"Decrypted file: {file_path} -> {decrypted_file_path}", operation_type="Decrypt")
+        update_log_treeview(
+            f"File decrypted: {decrypted_file_path}", operation_type="Decrypt")
         return f"File decrypted successfully: {decrypted_file_path}"
     except Exception as e:
         debug_log(f"Error during decryption: {e}", operation_type="Decrypt")
-        update_log_treeview(f"Error during decryption: {e}", operation_type="Decrypt")
+        update_log_treeview(
+            f"Error during decryption: {e}", operation_type="Decrypt")
         return f"Error during decryption: {e}"
 
 
@@ -270,14 +287,16 @@ current_command = None
 
 def send_arduino_command(command):
     global current_command
-    current_command = command 
+    current_command = command
     if arduino_connected:
         try:
             ser.write(command.encode('utf-8'))
         except Exception as e:
-            debug_log(f"Error sending command to Arduino: {e}", operation_type="Error")
+            debug_log(
+                f"Error sending command to Arduino: {e}", operation_type="Error")
     else:
-        debug_log(f"Mock command sent: {command}", operation_type="Mock Command")
+        debug_log(f"Mock command sent: {command}",
+                  operation_type="Mock Command")
 
 
 def read_arduino_data():
@@ -285,7 +304,8 @@ def read_arduino_data():
         try:
             return ser.readline().decode('utf-8').strip()
         except Exception as e:
-            debug_log(f"Error reading from Arduino: {e}", operation_type="Error")
+            debug_log(
+                f"Error reading from Arduino: {e}", operation_type="Error")
             return None
     else:
         mock_responses = {
@@ -298,14 +318,15 @@ def read_arduino_data():
 def on_fingerprint_scan():
     global key
     if not arduino_connected:
-   
-        debug_log("Error: Arduino not connected. Cannot scan fingerprint.", operation_type="Error")
+
+        debug_log("Error: Arduino not connected. Cannot scan fingerprint.",
+                  operation_type="Error")
         fingerprint_label.config(text="Error: Arduino not connected.")
         key_label.config(text="Generated Key (SHA-256): None")
         return
 
-
-    debug_log("Sending fingerprint scan command to Arduino.", operation_type="Fingerprint Scan")
+    debug_log("Sending fingerprint scan command to Arduino.",
+              operation_type="Fingerprint Scan")
     send_arduino_command("SCAN")
     check_fingerprint()
 
@@ -323,28 +344,34 @@ def check_fingerprint():
         action_frame.pack(pady=20)
     elif "Fingerprint not found" in data:
         fingerprint_label.config(text="Fingerprint not found. Try again.")
-        debug_log("Fingerprint not found. Waiting for retry...", operation_type="Fingerprint Scan")
+        debug_log("Fingerprint not found. Waiting for retry...",
+                  operation_type="Fingerprint Scan")
         root.after(100, check_fingerprint)
     elif data:
-        debug_log(f"Unexpected data: {data}. Retrying...", operation_type="Fingerprint Scan")
+        debug_log(f"Unexpected data: {data}. Retrying...",
+                  operation_type="Fingerprint Scan")
         root.after(100, check_fingerprint)
     else:
-        debug_log("Empty response. Retrying...", operation_type="Fingerprint Scan")
+        debug_log("Empty response. Retrying...",
+                  operation_type="Fingerprint Scan")
         root.after(100, check_fingerprint)
 
 
 def select_file():
     file_path = filedialog.askopenfilename(title="Select a file")
     if file_path:
-        action_result = encrypt_file(file_path, key) if action_choice.get() == 'encrypt' else decrypt_file(file_path, key)
-        messagebox.showinfo(f"{action_choice.get().capitalize()}ion Result", action_result)
+        action_result = encrypt_file(file_path, key) if action_choice.get(
+        ) == 'encrypt' else decrypt_file(file_path, key)
+        messagebox.showinfo(
+            f"{action_choice.get().capitalize()}ion Result", action_result)
 
 
 def on_add_fingerprint():
-    debug_log("Sending add fingerprint command.", operation_type="Add Fingerprint")
+    debug_log("Sending add fingerprint command.",
+              operation_type="Add Fingerprint")
     send_arduino_command("ADD")
     add_status_label.config(text="Sending add fingerprint command...")
-    mini_terminal.delete(1.0, tk.END)  
+    mini_terminal.delete(1.0, tk.END)
     check_add_fingerprint()
 
 
@@ -352,7 +379,7 @@ def check_add_fingerprint():
     data = read_arduino_data()
     debug_log(f"Received data: {data}", operation_type="Add Fingerprint")
     mini_terminal.insert(tk.END, f"Received data: {data}\n")
-    mini_terminal.yview(tk.END) 
+    mini_terminal.yview(tk.END)
 
     if "Place finger" in data:
         add_status_label.config(text="Place your finger on the scanner...")
@@ -362,35 +389,38 @@ def check_add_fingerprint():
         mini_terminal.insert(tk.END, "Remove your finger and wait...\n")
     elif "Fingerprint added" in data:
         try:
-            fingerprint_id = data.split('#')[1].split()[0]  
-            add_status_label.config(text=f"Fingerprint added successfully! ID: {fingerprint_id}")
-            save_log([datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "Add Fingerprint", f"Added fingerprint ID: {fingerprint_id}"])
-            update_log_treeview(f"Fingerprint added: {fingerprint_id}", operation_type="Add Fingerprint")
-            mini_terminal.insert(tk.END, f"Fingerprint added successfully: ID {fingerprint_id}\n")
+            fingerprint_id = data.split('#')[1].split()[0]
+            add_status_label.config(
+                text=f"Fingerprint added successfully! ID: {fingerprint_id}")
+            save_log([datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                     "Add Fingerprint", f"Added fingerprint ID: {fingerprint_id}"])
+            update_log_treeview(
+                f"Fingerprint added: {fingerprint_id}", operation_type="Add Fingerprint")
+            mini_terminal.insert(
+                tk.END, f"Fingerprint added successfully: ID {fingerprint_id}\n")
         except IndexError:
-            debug_log(f"Error parsing fingerprint ID from data: {data}", operation_type="Add Fingerprint")
-            mini_terminal.insert(tk.END, "Error parsing fingerprint ID. Data format unexpected.\n")
-            add_status_label.config(text="Error adding fingerprint. Try again.")
+            debug_log(
+                f"Error parsing fingerprint ID from data: {data}", operation_type="Add Fingerprint")
+            mini_terminal.insert(
+                tk.END, "Error parsing fingerprint ID. Data format unexpected.\n")
+            add_status_label.config(
+                text="Error adding fingerprint. Try again.")
     elif "Error" in data:
         add_status_label.config(text="Error adding fingerprint. Try again.")
         mini_terminal.insert(tk.END, "Error adding fingerprint. Try again.\n")
     else:
-        debug_log("Waiting for more fingerprint data...", operation_type="Add Fingerprint")
+        debug_log("Waiting for more fingerprint data...",
+                  operation_type="Add Fingerprint")
         root.after(100, check_add_fingerprint)
-
-
-
 
 
 # GUI Setup
 root = tk.Tk()
 root.title("BioCrypt")
-root.geometry("1000x600")
-root.resizable(True, False)
+root.geometry("1200x700")
+root.resizable(False, False)
 
 root.configure(bg=var1["bg"])
-
-
 
 
 # Tabs
@@ -398,241 +428,437 @@ notebook = ttk.Notebook(root)
 notebook.pack(fill="both", expand=True)
 
 # Tab 1: Encryption/Decryption
-encryption_frame = tk.Frame(notebook, bg=var1["bg"])  # Set the background color to dark blue
+# Set the background color to dark blue
+encryption_frame = tk.Frame(notebook, bg=var1["bg"])
 notebook.add(encryption_frame, text="Encryption/Decryption")
+
+label1 = tk.Label(encryption_frame, text="<̷ ",
+                  fg=var2["fg"], bg=var1["bg"], font=("Arial", 14))
+label1.place(x=70, y=50)
+
+label2 = tk.Label(encryption_frame, text=">̷",
+                  fg=var2["fg"], bg=var1["bg"], font=("Arial", 14))
+label2.place(x=300, y=150)
+
+label3 = tk.Label(encryption_frame, text="*̷",
+                  fg=var2["fg"], bg=var1["bg"], font=("Arial", 14))
+label3.place(x=600, y=250)
+
+# Additional labels in random spaces, avoiding the middle lane (around x=400, y=300)
+label4 = tk.Label(encryption_frame, text="&̷",
+                  fg=var2["fg"], bg=var1["bg"], font=("Arial", 17))
+label4.place(x=100, y=150)
+
+label5 = tk.Label(encryption_frame, text="(̶",
+                  fg=var2["fg"], bg=var1["bg"], font=("Arial", 19))
+label5.place(x=650, y=100)
+
+label6 = tk.Label(encryption_frame, text="^̵͉̦̓̓",
+                  fg=var2["fg"], bg=var1["bg"], font=("Arial", 21))
+label6.place(x=200, y=500)
+
+label7 = tk.Label(encryption_frame, text="Ֆ",
+                  fg=var2["fg"], bg=var1["bg"], font=("Arial", 16))
+label7.place(x=550, y=50)
+
+label8 = tk.Label(encryption_frame, text="%͛͘",
+                  fg=var2["fg"], bg=var1["bg"], font=("Arial", 14))
+label8.place(x=700, y=400)
+
+label9 = tk.Label(encryption_frame, text="@̈́̒͠",
+                  fg=var2["fg"], bg=var1["bg"], font=("Arial", 15))
+label9.place(x=50, y=450)
+
+
+label10 = tk.Label(encryption_frame, text="*̳",
+                   fg=var2["fg"], bg=var1["bg"], font=("Arial", 13))
+label10.place(x=150, y=300)
+
+label11 = tk.Label(encryption_frame, text="¿",
+                   fg=var2["fg"], bg=var1["bg"], font=("Arial", 17))
+label11.place(x=600, y=400)
+
+label12 = tk.Label(encryption_frame, text="x",
+                   fg=var2["fg"], bg=var1["bg"], font=("Arial", 16))
+label12.place(x=50, y=100)
+
+label13 = tk.Label(encryption_frame, text="x",
+                   fg=var2["fg"], bg=var1["bg"], font=("Arial", 21))
+label13.place(x=700, y=250)
+
+
+label16 = tk.Label(encryption_frame, text="¿",
+                   fg=var2["fg"], bg=var1["bg"], font=("Arial", 14))
+label16.place(x=100, y=500)
+
+label17 = tk.Label(encryption_frame, text="?",
+                   fg=var2["fg"], bg=var1["bg"], font=("Arial", 13))
+label17.place(x=650, y=350)
+
+
+label19 = tk.Label(encryption_frame, text="/",
+                   fg=var2["fg"], bg=var1["bg"], font=("Arial", 11))
+label19.place(x=300, y=400)
+
+
+label20 = tk.Label(encryption_frame, text="!",
+                   fg=var2["fg"], bg=var1["bg"], font=("Arial", 12))
+label20.place(x=850, y=550)
+
+label21 = tk.Label(encryption_frame, text="*",
+                   fg=var2["fg"], bg=var1["bg"], font=("Arial", 13))
+label21.place(x=900, y=250)
+
+label22 = tk.Label(encryption_frame, text="+",
+                   fg=var2["fg"], bg=var1["bg"], font=("Arial", 15))
+label22.place(x=800, y=150)
+
+label23 = tk.Label(encryption_frame, text="&",
+                   fg=var2["fg"], bg=var1["bg"], font=("Arial", 16))
+label23.place(x=950, y=300)
+
+label24 = tk.Label(encryption_frame, text="@",
+                   fg=var2["fg"], bg=var1["bg"], font=("Arial", 17))
+label24.place(x=850, y=200)
+
+label25 = tk.Label(encryption_frame, text="#",
+                   fg=var2["fg"], bg=var1["bg"], font=("Arial", 18))
+label25.place(x=900, y=500)
+
+label26 = tk.Label(encryption_frame, text="$",
+                   fg=var2["fg"], bg=var1["bg"], font=("Arial", 13))
+label26.place(x=850, y=100)
+
+label27 = tk.Label(encryption_frame, text="̈́̒͠",
+                   fg=var2["fg"], bg=var1["bg"], font=("Arial", 14))
+label27.place(x=720, y=250)
+
+label28 = tk.Label(encryption_frame, text="*",
+                   fg=var2["fg"], bg=var1["bg"], font=("Arial", 19))
+label28.place(x=1030, y=180)
+
+label29 = tk.Label(encryption_frame, text="!",
+                   fg=var2["fg"], bg=var1["bg"], font=("Arial", 12))
+label29.place(x=880, y=450)
+
+label30 = tk.Label(encryption_frame, text="?",
+                   fg=var2["fg"], bg=var1["bg"], font=("Arial", 16))
+label30.place(x=920, y=380)
+
+label31 = tk.Label(encryption_frame, text="$",
+                   fg=var2["fg"], bg=var1["bg"], font=("Arial", 20))
+label31.place(x=1100, y=320)
+
+label32 = tk.Label(encryption_frame, text="~",
+                   fg=var2["fg"], bg=var1["bg"], font=("Arial", 15))
+label32.place(x=780, y=220)
+
+label33 = tk.Label(encryption_frame, text="*",
+                   fg=var2["fg"], bg=var1["bg"], font=("Arial", 18))
+label33.place(x=960, y=270)
+
+label34 = tk.Label(encryption_frame, text="¿",
+                   fg=var2["fg"], bg=var1["bg"], font=("Arial", 14))
+label34.place(x=830, y=160)
+
+label35 = tk.Label(encryption_frame, text="̈́̒͠",
+                   fg=var2["fg"], bg=var1["bg"], font=("Arial", 17))
+label35.place(x=1010, y=400)
+
+label36 = tk.Label(encryption_frame, text="*",
+                   fg=var2["fg"], bg=var1["bg"], font=("Arial", 12))
+label36.place(x=700, y=350)
+
+label37 = tk.Label(encryption_frame, text="$",
+                   fg=var2["fg"], bg=var1["bg"], font=("Arial", 14))
+label37.place(x=720, y=600)
+
+label38 = tk.Label(encryption_frame, text="*̳",
+                   fg=var2["fg"], bg=var1["bg"], font=("Arial", 16))
+label38.place(x=1030, y=650)
+
+label39 = tk.Label(encryption_frame, text="]",
+                   fg=var2["fg"], bg=var1["bg"], font=("Arial", 18))
+label39.place(x=880, y=700)
+
+label40 = tk.Label(encryption_frame, text="[",
+                   fg=var2["fg"], bg=var1["bg"], font=("Arial", 12))
+label40.place(x=920, y=750)
+
+label41 = tk.Label(encryption_frame, text="¿",
+                   fg=var2["fg"], bg=var1["bg"], font=("Arial", 20))
+label41.place(x=1100, y=620)
+
+label42 = tk.Label(encryption_frame, text="*̳",
+                   fg=var2["fg"], bg=var1["bg"], font=("Arial", 15))
+label42.place(x=780, y=670)
+
+label43 = tk.Label(encryption_frame, text="$",
+                   fg=var2["fg"], bg=var1["bg"], font=("Arial", 18))
+label43.place(x=960, y=720)
+
+label44 = tk.Label(encryption_frame, text=":",
+                   fg=var2["fg"], bg=var1["bg"], font=("Arial", 14))
+label44.place(x=830, y=770)
+
+label45 = tk.Label(encryption_frame, text="¿",
+                   fg=var2["fg"], bg=var1["bg"], font=("Arial", 17))
+label45.place(x=1010, y=780)
+
+label46 = tk.Label(encryption_frame, text="$",
+                   fg=var2["fg"], bg=var1["bg"], font=("Arial", 12))
+label46.place(x=700, y=790)
+
 
 # Welcome Label
 welcome_label = tk.Label(
     encryption_frame,
-    text='''BioCrypt''',
+    text='BioCrypt',
     fg=var2["fg"],
-    bg=var1["bg"], 
-    font=("Courier", 75, "bold")
+    bg=var1["bg"],
+    font=("Courier", 90, "bold")
 )
-welcome_label.pack(pady=40)
+# welcome_label.pack(pady=60)
+welcome_label.place(x=580, y=100, anchor="center")
 
 
 def open_vault():
     """Function to run the vault.py program in a separate thread."""
     def run_program():
         os.system("python3 vault.py")
-    
 
     threading.Thread(target=run_program, daemon=True).start()
-
-
 
 
 def open_cloud():
     """Function to run the vault.py program in a separate thread."""
     def run_program():
         os.system("python3 cloud.py")
-    
 
     threading.Thread(target=run_program, daemon=True).start()
 
 
+def open_IPFS():
+    """Function to run the IPFS program in a separate thread."""
+    def run_program():
+        os.system("python3 ipfs.py")
 
-scan_button = tk.Button(encryption_frame, text="Scan Fingerprint",bg=var2["fg"],fg=var1["bg"], command=on_fingerprint_scan,relief="flat",bd=0,highlightthickness=0, font=("Courier", 12))
-scan_button.pack(pady=10)
-
-
-
-
-fingerprint_label = tk.Label(encryption_frame, text="Fingerprint ID: None",bg=var1["bg"],fg=var2["fg"], font=("Courier", 12))
-fingerprint_label.pack(pady=5)
+    threading.Thread(target=run_program, daemon=True).start()
 
 
-key_label = tk.Label(encryption_frame, text="Generated Key (SHA-256): None",bg=var1["bg"],fg=var2["fg"], font=("Courier", 12))
-key_label.pack(pady=5)
+def open_time_lock():
+    """Function to run the Time Lock program in a separate thread."""
+    def run_program():
+        os.system("python3 time_lock.py")
+
+    threading.Thread(target=run_program, daemon=True).start()
 
 
-action_frame = tk.Frame(encryption_frame,bg=var1["bg"])
+def open_file_beam():
+    """Function to run the File Beam program in a separate thread."""
+    def run_program():
+        os.system("python3 file_beam.py")
 
+    threading.Thread(target=run_program, daemon=True).start()
+
+
+def open_safe_mail():
+    """Function to run the Safe Mail program in a separate thread."""
+    def run_program():
+        os.system("python3 safe_mail.py")
+
+    threading.Thread(target=run_program, daemon=True).start()
+
+
+def open_compress():
+    """Function to run the Compress Files program in a separate thread."""
+    def run_program():
+        os.system("python3 compress.py")
+
+    threading.Thread(target=run_program, daemon=True).start()
+
+
+def open_summary():
+    """Function to run the Summaries program in a separate thread."""
+    def run_program():
+        os.system("python3 summary.py")
+
+    threading.Thread(target=run_program, daemon=True).start()
+
+
+def open_assistant():
+    """Function to run the Assistant program in a separate thread."""
+    def run_program():
+        os.system("python3 assistant.py")
+
+    threading.Thread(target=run_program, daemon=True).start()
+
+
+# Define hover effect function
+
+def on_hover(widget, bg_color):
+    widget.bind("<Enter>", lambda e: widget.config(bg=bg_color))
+    widget.bind("<Leave>", lambda e: widget.config(bg=var2["fg"]))
+
+
+# **Fingerprint Scan Button (Centered)**
+scan_button = tk.Button(encryption_frame, text="꩜ Scan Fingerprint",
+                        relief="flat", bd=0, highlightthickness=0, font=("Courier", 12, "bold"),
+                        fg=var1["bg"], bg=var2["fg"], activebackground="#444",
+                        cursor="hand2", command=on_fingerprint_scan)
+scan_button.place(x=430, y=350, width=300, height=40)
+
+
+# **Fingerprint & Key Labels (Centered Below)**
+fingerprint_label = tk.Label(encryption_frame, text="👤 Fingerprint ID: None",
+                             font=("Courier", 20), bg=var1["bg"], fg=var2["fg"])
+fingerprint_label.place(x=430, y=300)
+
+key_label = tk.Label(encryption_frame, text="🔒 Generated Key (SHA-256): None",
+                     font=("Courier", 12), bg=var1["bg"], fg=var2["fg"])
+key_label.place(x=10000, y=10)
+
+# **Action Frame (Encrypt/Decrypt/File Select)**
+action_frame = tk.Frame(encryption_frame, bg=var1["bg"])
+action_frame.place(x=430,
+                   y=400, width=300, height=120)
 
 action_choice = tk.StringVar(value='encrypt')
 
+encrypt_radio = tk.Radiobutton(action_frame, text="🔐 Encrypt File", variable=action_choice,
+                               value='encrypt', font=("Courier", 12), bg=var1["bg"],
+                               fg=var2["fg"], selectcolor=var1["bg"], activebackground=var1["bg"])
+encrypt_radio.place(x=0, y=10)
 
-encrypt_radio = tk.Radiobutton(action_frame, text="Encrypt File", variable=action_choice, value='encrypt',bg=var1["bg"],fg=var2["fg"], font=("Courier", 12))
-encrypt_radio.pack(pady=5)
-decrypt_radio = tk.Radiobutton(action_frame, text="Decrypt File", variable=action_choice, value='decrypt',bg=var1["bg"],fg=var2["fg"], font=("Courier", 12))
-decrypt_radio.pack(pady=5)
+decrypt_radio = tk.Radiobutton(action_frame, text="🗝 Decrypt File", variable=action_choice,
+                               value='decrypt', font=("Courier", 12), bg=var1["bg"],
+                               fg=var2["fg"], selectcolor=var1["bg"], activebackground=var1["bg"])
+decrypt_radio.place(x=0, y=40)
 
-
-file_button = tk.Button(action_frame, text="Select File", command=select_file,relief="flat",bd=0,highlightthickness=0,fg=var1["bg"],bg=var2["fg"], font=("Courier", 12))
-file_button.pack(pady=10)
-
-
-action_frame.pack(pady=20)
-
-
-
-
-vault_button = tk.Button(
-    encryption_frame,
-    text="Settings",
-    command=open_settings,  
-    bg=var2["fg"],
-    fg=var1["bg"]  
-   
-    ,font=("Courier", 12),
-    relief="flat",  
-    bd=0,  
-    highlightthickness=0,  
-)
-
-vault_button.pack(side="right", padx=20)
-
-vault_button = tk.Button(
-    encryption_frame,
-    text="Upload to Cloud",
-    command=open_cloud,  
-    bg=var2["fg"],fg=var1["bg"],
-    font=("Courier", 12),
-    relief="flat",  
-    bd=0,  
-    highlightthickness=0,  
-)
-
-vault_button.pack(side="right", padx=20)
+file_button = tk.Button(action_frame, text="📂 Select File",
+                        relief="flat", bd=0, highlightthickness=0, font=("Courier", 12, "bold"),
+                        fg=var1["bg"], bg=var2["fg"], activebackground="#444",
+                        cursor="hand2", command=select_file)
+file_button.place(x=150, y=14, width=150, height=40)
+# Extendable Sidebar
+block = tk.Button(encryption_frame, text="IPFS",
+                  relief="flat", bd=0, highlightthickness=0, font=("Courier", 12, "bold"),
+                  fg=var1["bg"], bg=var2["fg"], activebackground="#444",
+                  cursor="hand2", command=open_IPFS)
+block.place(x=430, y=475, width=300, height=40)
 
 
-vault_button = tk.Button(
-    encryption_frame,
-    text="Open Vault",
-    command=open_vault,  
-    bg=var2["fg"],fg=var1["bg"],  
-    font=("Courier", 12),
-    relief="flat",  
-    bd=0, 
-    highlightthickness=0,
-)
-
-vault_button.pack(side="right", padx=20)
+# Extendable Sidebar
+# Set to False to start with the sidebar hidden
+# Extendable Sidebar
+# Set to False to start with the sidebar hidden
+sidebar_visible = tk.BooleanVar(value=False)
 
 
+def toggle_sidebar():
+    if sidebar_visible.get():
+        sidebar_frame.pack_forget()
+    else:
+        sidebar_frame.pack(side="left", fill="y")
+    sidebar_visible.set(not sidebar_visible.get())
 
 
+sidebar_frame = tk.Frame(encryption_frame, bg=var1["bg"])
+# Do not pack the sidebar_frame initially
+
+buttons = [
+    ("The Vault", open_vault),
+    ("Cloud", open_cloud),
+    ("IPFS", open_IPFS),
+    ("Time Lock", open_time_lock),
+    ("File Beam", open_file_beam),
+    ("Safe Mail", open_safe_mail),
+    ("Compress Files", open_compress),
+    ("Summaries", open_summary),
+    ("Assistant", open_assistant),
+    ("Settings", open_settings),
 
 
+]
 
+for text, command in buttons:
+    button = tk.Button(sidebar_frame, text=text, command=command, bg=var2["fg"], fg=var1["bg"], font=(
+        "Courier", 12), relief="flat", bd=0, highlightthickness=0, width=20, height=2)
+    button.pack(fill="x", pady=2)
+    on_hover(button, "#555")  # Apply hover effect
+# ...existing code...
+
+toggle_button = tk.Button(encryption_frame, text="☰", command=toggle_sidebar,
+                          bg=var2["fg"], fg=var1["bg"], relief="flat", bd=0,
+                          highlightthickness=0, font=("Courier", 12), width=1, height=2)
+toggle_button.pack(side="top", anchor="nw", pady=10, padx=10)
+
+# No need to call toggle_sidebar() here as the sidebar is already hidden by default
+
+# Define hover effect function
+
+
+def on_hover(widget, bg_color):
+    widget.bind("<Enter>", lambda e: widget.config(bg=bg_color))
+    widget.bind("<Leave>", lambda e: widget.config(bg=var2["fg"]))
+
+
+# Apply hover effect to toggle button
+on_hover(toggle_button, "#555")
+
+# Ensure the sidebar is hidden initially
+# No need to call toggle_sidebar() here as the sidebar is already hidden by default
+
+# ...existing code...
+
+# Ensure the sidebar is hidden initially
+# No need to call toggle_sidebar() here as the sidebar is already hidden by default
 
 # Tab 2: Add Fingerprint
-add_fingerprint_frame = tk.Frame(notebook,bg=var1["bg"])
+add_fingerprint_frame = tk.Frame(notebook, bg=var1["bg"])
 notebook.add(add_fingerprint_frame, text="Add Fingerprint")
 
-add_fingerprint_label = tk.Label(add_fingerprint_frame, text="Place your finger on the scanner",bg=var1["bg"],fg=var2["fg"], font=("Courier", 20,"bold"))
+add_fingerprint_label = tk.Label(add_fingerprint_frame, text="Place your finger on the scanner",
+                                 bg=var1["bg"], fg=var2["fg"], font=("Courier", 20, "bold"))
 add_fingerprint_label.pack(pady=70)
 
-add_button = tk.Button(add_fingerprint_frame, text="Add Fingerprint", command=on_add_fingerprint,relief="flat",bd=0,highlightthickness=0,bg=var2["fg"],fg=var1["bg"],font=("Courier", 12))
+add_button = tk.Button(add_fingerprint_frame, text="Add Fingerprint", command=on_add_fingerprint,
+                       relief="flat", bd=0, highlightthickness=0, bg=var2["fg"], fg=var1["bg"], font=("Courier", 12), width=20, height=2)
 add_button.pack(pady=50)
 
-add_status_label = tk.Label(add_fingerprint_frame, text="Status: Waiting for command...",bg=var1["bg"],fg=var2["fg"],font=("Courier", 14))
+add_status_label = tk.Label(add_fingerprint_frame, text="Status: Waiting for command...",
+                            bg=var1["bg"], fg=var2["fg"], font=("Courier", 14))
 add_status_label.pack()
 
 # Mini Terminal for Add Fingerprint
-mini_terminal = tk.Text(add_fingerprint_frame, height=40, width=100,bg=var2["fg"])
+mini_terminal = tk.Text(add_fingerprint_frame,
+                        height=50, width=160, bg=var2["fg"])
 mini_terminal.pack(pady=10)
 
+# ...existing code...
+
 # Tab 3: Logs
-log_frame = tk.Frame(notebook,bg=var1["bg"])
+log_frame = tk.Frame(notebook, bg=var1["bg"])
 notebook.add(log_frame, text="Logs")
 
-logs_treeview = ttk.Treeview(log_frame, columns=("Timestamp", "Operation", "Message"), show="headings")
+logs_treeview = ttk.Treeview(log_frame, columns=(
+    "Timestamp", "Operation", "Message"), show="headings", style="Custom.Treeview")
 logs_treeview.heading("Timestamp", text="Timestamp")
 logs_treeview.heading("Operation", text="Operation")
 logs_treeview.heading("Message", text="Message")
 
-logs_treeview.column("Timestamp", width=150)
-logs_treeview.column("Operation", width=150)
-logs_treeview.column("Message", width=400)
+logs_treeview.column("Timestamp", width=3)
+logs_treeview.column("Operation", width=3)
+logs_treeview.column("Message", width=600)
 
 logs_treeview.pack(fill="both", expand=True)
 load_logs()
 
-label1 = tk.Label(encryption_frame, text="<̷ ",fg=var2["fg"],bg=var1["bg"], font=("Arial", 14))
-label1.place(x=70, y=50)
-
-label2 = tk.Label(encryption_frame, text=">̷",fg=var2["fg"],bg=var1["bg"], font=("Arial", 14))
-label2.place(x=300, y=150)
-
-label3 = tk.Label(encryption_frame, text="*̷",fg=var2["fg"],bg=var1["bg"], font=("Arial", 14))
-label3.place(x=600, y=250)
-
-# Additional labels in random spaces, avoiding the middle lane (around x=400, y=300)
-label4 = tk.Label(encryption_frame, text="&̷",fg=var2["fg"],bg=var1["bg"], font=("Arial", 17))
-label4.place(x=100, y=150)
-
-label5 = tk.Label(encryption_frame, text="(̶",fg=var2["fg"],bg=var1["bg"], font=("Arial", 19))
-label5.place(x=650, y=100)
-
-label6 = tk.Label(encryption_frame, text="^̵͉̦̓̓",fg=var2["fg"],bg=var1["bg"], font=("Arial", 21))
-label6.place(x=200, y=500)
-
-label7 = tk.Label(encryption_frame, text="Ֆ",fg=var2["fg"],bg=var1["bg"], font=("Arial", 16))
-label7.place(x=550, y=50)
-
-label8 = tk.Label(encryption_frame, text="%͛͘",fg=var2["fg"],bg=var1["bg"], font=("Arial", 14))
-label8.place(x=700, y=400)
-
-label9 = tk.Label(encryption_frame, text="@̈́̒͠",fg=var2["fg"],bg=var1["bg"], font=("Arial", 15))
-label9.place(x=50, y=450)
-
-
-label10 = tk.Label(encryption_frame, text="*̳",fg=var2["fg"],bg=var1["bg"], font=("Arial", 13))
-label10.place(x=150, y=300)
-
-label11 = tk.Label(encryption_frame, text="¿",fg=var2["fg"],bg=var1["bg"], font=("Arial", 17))
-label11.place(x=600, y=400)
-
-label12 = tk.Label(encryption_frame, text="x",fg=var2["fg"],bg=var1["bg"], font=("Arial", 16))
-label12.place(x=50, y=100)
-
-label13 = tk.Label(encryption_frame, text="x",fg=var2["fg"],bg=var1["bg"], font=("Arial", 21))
-label13.place(x=700, y=250)
-
-
-
-
-
-label16 = tk.Label(encryption_frame, text="¿",fg=var2["fg"],bg=var1["bg"], font=("Arial", 14))
-label16.place(x=100, y=500)
-
-label17 = tk.Label(encryption_frame, text="?",fg=var2["fg"],bg=var1["bg"], font=("Arial", 13))
-label17.place(x=650, y=350)
-
-
-
-label19 = tk.Label(encryption_frame, text="/",fg=var2["fg"],bg=var1["bg"], font=("Arial", 11))
-label19.place(x=300, y=400)
-
-
-label20 = tk.Label(encryption_frame, text="!", fg=var2["fg"], bg=var1["bg"], font=("Arial", 12))
-label20.place(x=850, y=550)
-
-label21 = tk.Label(encryption_frame, text="*", fg=var2["fg"], bg=var1["bg"], font=("Arial", 13))
-label21.place(x=900, y=250)
-
-label22 = tk.Label(encryption_frame, text="+", fg=var2["fg"], bg=var1["bg"], font=("Arial", 15))
-label22.place(x=800, y=150)
-
-label23 = tk.Label(encryption_frame, text="&", fg=var2["fg"], bg=var1["bg"], font=("Arial", 16))
-label23.place(x=950, y=300)
-
-label24 = tk.Label(encryption_frame, text="@", fg=var2["fg"], bg=var1["bg"], font=("Arial", 17))
-label24.place(x=850, y=200)
-
-label25 = tk.Label(encryption_frame, text="#", fg=var2["fg"], bg=var1["bg"], font=("Arial", 18))
-label25.place(x=900, y=500)
-
-label26 = tk.Label(encryption_frame, text="$", fg=var2["fg"], bg=var1["bg"], font=("Arial", 13))
-label26.place(x=850, y=100)
-
-
-
-
+# Apply custom style to Treeview
+style = ttk.Style()
+style.configure("Custom.Treeview",
+                background=var1["bg"], foreground=var2["fg"], fieldbackground=var1["bg"])
+style.configure("Custom.Treeview.Heading",
+                background=var1["bg"], foreground=var2["fg"])
 
 root.mainloop()
-
-
-
