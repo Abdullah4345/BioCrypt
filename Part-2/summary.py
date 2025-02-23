@@ -1,33 +1,40 @@
-import PIL.Image
 import json
 import random
+from PIL import Image, ImageTk
 from google import genai
 from google.genai import types
-import tkinter as tk
-from tkinter import filedialog
+from tkinter import filedialog ,Tk, Canvas, Entry, Text, Button, PhotoImage, Frame
 import time
 import os
+from pathlib import Path
+
+
+
 
 
 try:
         with open("summary.json", "r") as file:
             data = json.load(file)
 except (FileNotFoundError, json.JSONDecodeError):
-        data = {}
+            data = {}
 
-def get_random():
-    random_id = random.randint(1000, 9999)
-    while str(random_id) in data:
-        random_id = random.randint(1000, 9999)
-    return str(random_id)
-def write_json(response):
-    data[get_random()] = response
+# def get_random():
+#     random_id = random.randint(1000, 9999)
+#     while str(random_id) in data:
+#         random_id = random.randint(1000, 9999)
+#     return str(random_id)
+def write_json(response,file_name, type):
+    data[file_name] = {"File_type":type, "desc":response}
     
-    with open("summary.json", "w") as json_file:
+    with open("Part-2/summary.json", "w") as json_file:
         json.dump(data, json_file, indent=4)
 
     print("Response written to summary.json")
 def select_file():
+    
+# Create the root window
+    root = Tk()
+    root.withdraw()  # Hide the main window
     file_types = [
         ("Audio Files", "*.wav;*.mp3;*.aiff;*.aac;*.ogg;*.flac"),
         ("Image Files", "*.png;*.jpeg;*.jpg;*.webp;*.heic;*.heif"),
@@ -42,14 +49,11 @@ def select_file():
         print(f"Selected file: {file_path}")
     return file_path
 
-# Create the root window
-root = tk.Tk()
-root.withdraw()  # Hide the main window
 
 def response_img(file_path):
     
     
-    image = PIL.Image.open(file_path)
+    image = Image.open(file_path)
     
     client = genai.Client(api_key="AIzaSyDLpW4BEUngeE7LajD_zWXR8ecC-QyfQd0")
     response = client.models.generate_content(
@@ -57,6 +61,9 @@ def response_img(file_path):
         contents=["summarize it to 10 words only without any another response and be precise in names and info", image]
     )
     print(response.text)
+    write_json(response.text,os.path.splitext(file_path)[0].split("/")[-1],"Img")
+    
+    
     
 def response_audio(file_path):
     client = genai.Client(api_key="AIzaSyDLpW4BEUngeE7LajD_zWXR8ecC-QyfQd0")
@@ -71,6 +78,8 @@ def response_audio(file_path):
     ]
 )
     print(response.text)
+    write_json(response.text,os.path.splitext(file_path)[0].split("/")[-1],"Audio")
+
     
 
 def response_video(file_path):
@@ -93,6 +102,8 @@ def response_video(file_path):
         video_file,
         "summarize it to 10 words only without any another response and be precise in names and info"])
     print(response.text)
+    write_json(response.text,os.path.splitext(file_path)[0].split("/")[-1],"Video")
+
     
 
 def response_file(file_path):
@@ -104,6 +115,81 @@ def response_file(file_path):
             file,
             "summarize it to 10 words only without any another response and be precise in names and info"])
     print(response.text)    
+    write_json(response.text,os.path.splitext(file_path)[0].split("/")[-1],"Document")
+
+
+def Data_Frame():
+
+    def truncate_text(text, max_length):
+        return text[0:max_length] + "..." if len(text)>max_length else text
+
+    window = Tk()
+    window.geometry("553x306")
+    window.configure(bg="#FFFFFF")
+   
+
+    canvas = Canvas(
+    window,
+    bg = "#FFFFFF",
+    height = 306,
+    width = 553,
+    bd = 0,
+    highlightthickness = 0,
+    relief = "ridge"
+)
+
+    canvas.place(x = 0, y = 0)
+    
+    # Load and place the background image
+    bg_image = Image.open("assets/frame0/background.jpg")  # Change to your actual background image
+    bg_image = bg_image.resize((553, 306), Image.LANCZOS)  # Resize to fit the window
+    bg_photo = ImageTk.PhotoImage(bg_image)
+
+    # Set image as background
+    canvas.create_image(0, 0, anchor="nw", image=bg_photo)
+    
+    
+    
+    image_image_1 = PhotoImage(
+        file=("assets/frame0/image_1.png"))
+    image_1 = canvas.create_image(
+        480.0,
+        130.0,
+        image=image_image_1
+    )
+
+    canvas.create_text(
+        30.0,
+        19.0,
+        anchor="nw",
+        text=truncate_text("1987465FNW123dkUMJ8",18),
+        fill="#000000",
+        font=("Roboto CondensedExtraBoldItalic", 30 * -1))
+
+
+    canvas.create_text(
+        30,
+        70.0,
+        anchor="nw",
+        text= "Type : Image",
+        fill="#000000",
+        font=("Roboto CondensedExtraBoldItalic", 30 * -1))
+
+
+    canvas.create_text(
+        30,  # X-coordinate (adjust based on canvas width)
+        171.0,  # Y-coordinate
+        anchor="w",  # Center alignment
+        text="Young man with curly hair, smiling against a blue background.",
+        fill="#000000",
+        font=("Roboto Condensed ExtraBold Italic", 30 * -1),
+        width=400# Adjust the width to wrap text properly
+        ,
+    )
+    window.resizable(False, False)
+    window.mainloop()
+
+
 
 
 def main():
@@ -115,16 +201,15 @@ def main():
 
     file_path = select_file()
     ext = os.path.splitext(file_path)[1].lower()  # Get file extension in lowercase
-
     if ext in IMAGE_EXTENSIONS:
         response_img(file_path)
     elif ext in AUDIO_EXTENSIONS:
-        response_audio(file_path);
+        response_audio(file_path)
     elif ext in VIDEO_EXTENSIONS:
         response_video(file_path)
     elif ext in DOCUMENT_EXTENSIONS:
-        response_file(file_path);
+        response_file(file_path)
     else:
         print("Unknown file type.") 
-main()
     
+Data_Frame()
