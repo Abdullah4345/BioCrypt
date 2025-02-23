@@ -37,7 +37,7 @@ file_owners = {}  # Maps files to their owner: {file_path: email}
 
 
 # Fixed 256-bit key (32 bytes)
-fixed_key = b"1234567890abcdef1234567890abcdef"  # Predefined key (you can change this to any 32-byte value)
+fixed_key = b"BecaUKnowInAMomentItCouldAllPoow"  # Predefined key (you can change this to any 32-byte value)
 
 # Encryption Function (with fixed key)
 def encrypt_file(file_path, user_email):
