@@ -3,13 +3,10 @@ import random
 from PIL import Image, ImageTk
 from google import genai
 from google.genai import types
-from tkinter import filedialog ,Tk, Canvas, Entry, Text, Button, PhotoImage, Frame
+from tkinter import filedialog ,Tk, Canvas, Entry, Text, Button, PhotoImage, Frame, font
 import time
 import os
 from pathlib import Path
-
-
-
 
 
 try:
@@ -18,11 +15,6 @@ try:
 except (FileNotFoundError, json.JSONDecodeError):
             data = {}
 
-# def get_random():
-#     random_id = random.randint(1000, 9999)
-#     while str(random_id) in data:
-#         random_id = random.randint(1000, 9999)
-#     return str(random_id)
 def write_json(response,file_name, type):
     data[file_name] = {"File_type":type, "desc":response}
     
@@ -48,8 +40,6 @@ def select_file():
     if file_path:
         print(f"Selected file: {file_path}")
     return file_path
-
-
 def response_img(file_path):
     
     
@@ -62,9 +52,6 @@ def response_img(file_path):
     )
     print(response.text)
     write_json(response.text,os.path.splitext(file_path)[0].split("/")[-1],"Img")
-    
-    
-    
 def response_audio(file_path):
     client = genai.Client(api_key="AIzaSyDLpW4BEUngeE7LajD_zWXR8ecC-QyfQd0")
 
@@ -79,9 +66,6 @@ def response_audio(file_path):
 )
     print(response.text)
     write_json(response.text,os.path.splitext(file_path)[0].split("/")[-1],"Audio")
-
-    
-
 def response_video(file_path):
     client = genai.Client(api_key="AIzaSyDLpW4BEUngeE7LajD_zWXR8ecC-QyfQd0")
 
@@ -103,9 +87,6 @@ def response_video(file_path):
         "summarize it to 10 words only without any another response and be precise in names and info"])
     print(response.text)
     write_json(response.text,os.path.splitext(file_path)[0].split("/")[-1],"Video")
-
-    
-
 def response_file(file_path):
     client = genai.Client(api_key="AIzaSyDLpW4BEUngeE7LajD_zWXR8ecC-QyfQd0")
     file = client.files.upload(file =file_path)
@@ -116,76 +97,105 @@ def response_file(file_path):
             "summarize it to 10 words only without any another response and be precise in names and info"])
     print(response.text)    
     write_json(response.text,os.path.splitext(file_path)[0].split("/")[-1],"Document")
-
-
-def Data_Frame():
+def Data_Frame(name,type,desc):
 
     def truncate_text(text, max_length):
         return text[0:max_length] + "..." if len(text)>max_length else text
 
-    window = Tk()
-    window.geometry("553x306")
-    window.configure(bg="#FFFFFF")
-   
-
-    canvas = Canvas(
-    window,
-    bg = "#FFFFFF",
-    height = 306,
-    width = 553,
-    bd = 0,
-    highlightthickness = 0,
-    relief = "ridge"
-)
-
-    canvas.place(x = 0, y = 0)
+    def get_frame_size(desc):
+        return  (len(desc)/90)*70 if len(desc)>90 else 1;
+    
+    OUTPUT_PATH = Path(__file__).parent
+    ASSETS_PATH = OUTPUT_PATH / "assets" / "frame0"
+    def relative_to_assets(path: str) -> Path:
+        return ASSETS_PATH / Path(path)
     
     # Load and place the background image
-    bg_image = Image.open("assets/frame0/background.jpg")  # Change to your actual background image
-    bg_image = bg_image.resize((553, 306), Image.LANCZOS)  # Resize to fit the window
+    window = Tk()
+    window.geometry(f"553x{str(int(306+get_frame_size(desc)))}")
+    window.configure(bg="#FFFFFF")
+    bg_image = Image.open(relative_to_assets("background.jpg"))  # Change to your actual background image
+    bg_image = bg_image.resize((553, int(306+get_frame_size(desc))), Image.LANCZOS)  # Resize to fit the window
     bg_photo = ImageTk.PhotoImage(bg_image)
 
-    # Set image as background
+    
+
+
+    # Load font from project folder
+    custom_font40 = font.Font(family="Roboto Condensed", size=28, weight="bold", slant="italic")
+    custom_font44 = font.Font(family="Roboto Condensed", size=32, weight="bold", slant="italic")
+    custom_font28 = font.Font(family="Roboto Condensed", size=20, weight="bold", slant="italic")
+
+    canvas = Canvas(
+        window,
+        bg="#FFFFFF",
+        height=int(306+get_frame_size(desc)),
+        width=553,
+        bd=0,
+        highlightthickness=0,
+        relief="ridge"
+    )
+
+    canvas.place(x=0, y=0)
+    
+        # Set image as background
     canvas.create_image(0, 0, anchor="nw", image=bg_photo)
-    
-    
-    
+
+
     image_image_1 = PhotoImage(
-        file=("assets/frame0/image_1.png"))
+        file=relative_to_assets("image_1.png"))
     image_1 = canvas.create_image(
-        480.0,
-        130.0,
+        474.0,
+        125.0,
         image=image_image_1
     )
 
+    # canvas.create_rectangle(
+    #     5.0,
+    #     10.0,
+    #     372.0,
+    #     81.0,
+    #     fill="#D9D9D9",
+    #     outline="")
+
+    # canvas.create_rectangle(
+    #     5.0,
+    #     112.0,
+    #     205.0,
+    #     183.0,
+    #     fill="#D9D9D9",
+    #     outline="")
+
     canvas.create_text(
-        30.0,
-        19.0,
+        10.0,
+        20.0,
         anchor="nw",
-        text=truncate_text("1987465FNW123dkUMJ8",18),
+        text=truncate_text(name, 15),
         fill="#000000",
-        font=("Roboto CondensedExtraBoldItalic", 30 * -1))
-
-
-    canvas.create_text(
-        30,
-        70.0,
-        anchor="nw",
-        text= "Type : Image",
-        fill="#000000",
-        font=("Roboto CondensedExtraBoldItalic", 30 * -1))
-
-
-    canvas.create_text(
-        30,  # X-coordinate (adjust based on canvas width)
-        171.0,  # Y-coordinate
-        anchor="w",  # Center alignment
-        text="Young man with curly hair, smiling against a blue background.",
-        fill="#000000",
-        font=("Roboto Condensed ExtraBold Italic", 30 * -1),
-        width=400# Adjust the width to wrap text properly
-        ,
+        font=custom_font44
     )
+
+    canvas.create_text(
+        10.0,
+        118.0,
+        anchor="nw",
+        text="Type:" + type,
+        fill="#000000",
+        font=custom_font40
+    )
+
+    canvas.create_text(
+        10.0,
+        215.0,
+        anchor="nw",
+        text=desc,
+        fill="#000000",
+        font=custom_font28,
+        width=540, 
+        justify="center",
+        
+    )
+
     window.resizable(False, False)
     window.mainloop()
 
@@ -212,4 +222,3 @@ def main():
     else:
         print("Unknown file type.") 
     
-Data_Frame()
