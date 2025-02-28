@@ -306,7 +306,7 @@ def send_confirmation_email(user_email, encrypted_file_path):
         with smtplib.SMTP("smtp.gmail.com", 587) as server:
             server.starttls()
             
-            server.login("biocryptprogram@gmail.com", "nwxv ztza szsi trcx")
+            server.login("biocryptprogram@gmail.com", "")
 
             subject = "File Encryption Confirmation"
             body = f"Hello,\n\nYour file has been successfully encrypted and added to the vault.\n\nEncrypted file path: {encrypted_file_path}\n\nBest regards,\nVault Team"
