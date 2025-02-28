@@ -45,7 +45,7 @@ def response_img(file_path):
     
     image = Image.open(file_path)
     
-    client = genai.Client(api_key="AIzaSyDLpW4BEUngeE7LajD_zWXR8ecC-QyfQd0")
+    client = genai.Client(api_key="Api")
     response = client.models.generate_content(
         model="gemini-2.0-flash",
         contents=["summarize it to 10 words only without any another response and be precise in names and info", image]
@@ -53,7 +53,7 @@ def response_img(file_path):
     print(response.text)
     write_json(response.text,os.path.splitext(file_path)[0].split("/")[-1],"Img")
 def response_audio(file_path):
-    client = genai.Client(api_key="AIzaSyDLpW4BEUngeE7LajD_zWXR8ecC-QyfQd0")
+    client = genai.Client(api_key="Api")
 
     audio_file = client.files.upload(file=file_path)
 
@@ -67,7 +67,7 @@ def response_audio(file_path):
     print(response.text)
     write_json(response.text,os.path.splitext(file_path)[0].split("/")[-1],"Audio")
 def response_video(file_path):
-    client = genai.Client(api_key="AIzaSyDLpW4BEUngeE7LajD_zWXR8ecC-QyfQd0")
+    client = genai.Client(api_key="Api")
 
     print("Uploading file...")
     video_file = client.files.upload(file=file_path)
@@ -88,7 +88,7 @@ def response_video(file_path):
     print(response.text)
     write_json(response.text,os.path.splitext(file_path)[0].split("/")[-1],"Video")
 def response_file(file_path):
-    client = genai.Client(api_key="AIzaSyDLpW4BEUngeE7LajD_zWXR8ecC-QyfQd0")
+    client = genai.Client(api_key="Api")
     file = client.files.upload(file =file_path)
     response = client.models.generate_content(
         model='gemini-2.0-flash',
