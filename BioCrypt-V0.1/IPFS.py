@@ -18,14 +18,14 @@ CSV_FILE = "data/theme_settings.csv"
 
 
 def read_from_csv():
-    # Read the theme settings from the CSV file
+    
     try:
         with open(CSV_FILE, mode='r') as file:
             reader = csv.reader(file)
             row = next(reader)
-            return row[0], row[1]  # Return bg and fg values separately
+            return row[0], row[1]  
     except FileNotFoundError:
-        return "#ffffff", "#000000"  # Default values if CSV doesn't exist
+        return "#ffffff", "#000000"  
 
 
 bg_color, fg_color = read_from_csv()
@@ -33,9 +33,9 @@ var1 = {"bg": bg_color}
 var2 = {"fg": fg_color}
 
 
-IPFS_GATEWAY_URL = "https://ipfs.io"  # Or use your preferred gateway
+IPFS_GATEWAY_URL = "https://ipfs.io"  
 
-# Make sure your IPFS daemon is running
+
 IPFS_API_URL = "http://127.0.0.1:5001/api/v0"
 
 
@@ -45,7 +45,7 @@ def upload_to_ipfs(file_path):
         return response.json()["Hash"] if response.status_code == 200 else None
 
 
-# Web3 & IPFS Configuration
+
 INFURA_URL = ""
 CONTRACT_ADDRESS = ""
 ACCOUNT_ADDRESS = ""
@@ -135,7 +135,7 @@ def store_cid_on_blockchain(cid):
     txn = contract.functions.storeFileCID(cid).build_transaction({
         "from": ACCOUNT_ADDRESS,
         "nonce": nonce,
-        "gas": 100000,  # ⬆️ Increased gas
+        "gas": 100000,  
         "gasPrice": w3.eth.gas_price,
     })
 
@@ -179,14 +179,14 @@ def upload_file():
 
     encrypted_file, encryption_key = encrypt_file(file_path)
 
-    # Save the encryption key with the corresponding CID
+
     cid = upload_to_ipfs(encrypted_file)
     if not cid:
         messagebox.showerror("Error", "Failed to upload file to IPFS.")
         return
 
     save_encryption_key(cid, encryption_key)
-    save_file_name(cid, file_name)  # Save the file name with the CID
+    save_file_name(cid, file_name)  
 
     tx_hash = store_cid_on_blockchain(cid)
 
@@ -201,27 +201,27 @@ def list_stored_files():
     cids = contract.functions.getStoredCIDs().call()
     print("Stored CIDs in contract:", cids)
 
-    # Load file names
+ 
     try:
         with open("data/file_names.json", "r") as f:
             file_names = json.load(f)
     except (FileNotFoundError, json.JSONDecodeError):
         file_names = {}
 
-    print("Fetching stored files...")  # Debugging
+    print("Fetching stored files...") 
     cids = contract.functions.getStoredCIDs().call()
-    print("Received CIDs:", cids)  # Debugging
+    print("Received CIDs:", cids) 
     file_listbox.config(state=tk.NORMAL)
-    file_listbox.delete(0, tk.END)  # Clear previous entries
+    file_listbox.delete(0, tk.END) 
 
     for cid in cids:
-        # Use file name if available, otherwise CID
+        
         display_name = file_names.get(cid, cid)
         file_listbox.insert(tk.END, display_name)
-    print("List updated successfully!")  # Debugging
+    print("List updated successfully!")  
 
 
-# IPFS Gateway URLs
+
 IPFS_GATEWAYS = [
     "https://ipfs.io/ipfs/",
     "https://cloudflare-ipfs.com/ipfs/",
@@ -239,14 +239,14 @@ IPFS_GATEWAYS = [
 
 
 def retrieve_file_with_retry(cid, max_attempts=5):
-    backoff = 5  # Start with 5 seconds
+    backoff = 5  
     for attempt in range(max_attempts):
         for gateway in IPFS_GATEWAYS:
             url = f"{gateway}{cid}"
             print(f"Trying {url} (Attempt {attempt + 1})")
 
             try:
-                response = requests.get(url, timeout=60)  # Increase timeout
+                response = requests.get(url, timeout=60)  
                 if response.status_code == 200:
                     return response.content
                 else:
@@ -260,7 +260,7 @@ def retrieve_file_with_retry(cid, max_attempts=5):
             print(
                 f"Retrying in {backoff} seconds... ({attempt + 1}/{max_attempts})")
             time.sleep(backoff)
-            backoff *= 2  # Exponential backoff
+            backoff *= 2  
 
     print("❌ All retrieval attempts failed.")
     return None
@@ -272,9 +272,9 @@ def retrieve_and_decrypt():
         messagebox.showwarning("Warning", "Select a file to retrieve!")
         return
 
-    display_name = file_listbox.get(selected[0])  # Get the display name
+    display_name = file_listbox.get(selected[0]) 
 
-    # Load file names to map display name back to CID
+    
     try:
         with open("data/file_names.json", "r") as f:
             file_names = json.load(f)
@@ -282,18 +282,18 @@ def retrieve_and_decrypt():
         messagebox.showerror("Error", "File names file missing or corrupted!")
         return
 
-    # Find the CID corresponding to the display name
+    
     cid = None
     for key, value in file_names.items():
         if value == display_name:
             cid = key
-            break  # FIX: Direct dictionary lookup
+            break  
 
     if not cid:
         messagebox.showerror("Error", "CID not found for the selected file!")
         return
 
-    # Authenticate using Touch ID **before retrieving the file**
+    
     if not authenticate_touch_id():
         messagebox.showerror("Error", "Authentication Failed!")
         return
@@ -304,7 +304,7 @@ def retrieve_and_decrypt():
         messagebox.showerror("Error", "Failed to retrieve file from IPFS!")
         return
 
-    # Load encryption keys
+    
     try:
         with open("data/encryption_keys.json", "r") as key_file:
             encryption_keys = json.load(key_file)
@@ -313,7 +313,7 @@ def retrieve_and_decrypt():
             "Error", "Encryption keys file missing or corrupted!")
         return
 
-    # Get the encryption key for this CID
+    
     encryption_key = encryption_keys.get(cid)
 
     if not encryption_key:
@@ -322,9 +322,9 @@ def retrieve_and_decrypt():
 
     encryption_key = bytes.fromhex(encryption_key)
 
-    # Extract IV and decrypt
-    iv = file_data[:16]  # Extract IV
-    ciphertext = file_data[16:]  # Extract actual encrypted content
+    
+    iv = file_data[:16] 
+    ciphertext = file_data[16:]  
 
     try:
         cipher = AES.new(encryption_key, AES.MODE_CBC, iv)
@@ -334,9 +334,9 @@ def retrieve_and_decrypt():
             "Error", "Decryption failed! Invalid key or corrupted file.")
         return
 
-    # Ask the user for a save location
+   
     root = tk.Tk()
-    root.withdraw()  # Hide the main window
+    root.withdraw()  
 
     save_path = filedialog.asksaveasfilename(
         defaultextension="",
@@ -345,7 +345,7 @@ def retrieve_and_decrypt():
         filetypes=[("All Files", "*.*")]
     )
 
-    if save_path:  # If user selects a save location
+    if save_path:  
         with open(save_path, "wb") as f:
             f.write(plaintext)
         messagebox.showinfo(
