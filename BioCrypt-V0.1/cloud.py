@@ -17,14 +17,14 @@ CSV_FILE = "data/theme_settings.csv"
 
 
 def read_from_csv():
-    # Read the theme settings from the CSV file
+    
     try:
         with open(CSV_FILE, mode='r') as file:
             reader = csv.reader(file)
             row = next(reader)
-            return row[0], row[1]  # Return bg and fg values separately
+            return row[0], row[1]  
     except FileNotFoundError:
-        return "#ffffff", "#000000"  # Default values if CSV doesn't exist
+        return "#ffffff", "#000000"  
 
 
 bg_color, fg_color = read_from_csv()
@@ -38,9 +38,9 @@ SCOPES = ['https://www.googleapis.com/auth/drive.file']
 class GoogleDriveUploader:
     def __init__(self):
         self.creds = None
-        self.email_file_mapping = {}  # In-memory mapping
+        self.email_file_mapping = {}  
         self.authenticate()
-        self.load_mapping()  # ✅ Load the mapping from CSV
+        self.load_mapping()  
 
     def load_mapping(self):
         """Load the file-to-email mapping from the CSV file."""
@@ -49,7 +49,7 @@ class GoogleDriveUploader:
                 reader = csv.reader(file)
                 self.email_file_mapping = {row[0]: row[1] for row in reader}
         except FileNotFoundError:
-            pass  # No file found, continue with empty mapping
+            pass 
 
     def authenticate(self):
         """Authenticate the user with Google Drive API and request a new token if needed."""
@@ -88,9 +88,9 @@ class GoogleDriveUploader:
                                           media_body=media, fields='id').execute()
 
             file_id = file.get('id')
-            self.email_file_mapping[file_id] = user_email  # ✅ Save mapping
+            self.email_file_mapping[file_id] = user_email  
 
-            # Save the mapping to a CSV file
+            
             with open('data/file_mapping.csv', mode='a', newline='') as file:
                 writer = csv.writer(file)
                 writer.writerow([file_id, user_email])
@@ -102,7 +102,7 @@ class GoogleDriveUploader:
     def download_file(self, file_id, save_path, user_email):
         """Download a file from Google Drive if the email matches."""
         try:
-            # Check if the email matches for the file
+            
             if self.email_file_mapping.get(file_id) != user_email:
                 return False, "Email does not match the file owner."
 
@@ -167,7 +167,7 @@ class FileManagerApp:
         self.uploader = GoogleDriveUploader()
         self.otp_manager = OTPManager()
 
-        # Title Label
+        
         self.title_label = tk.Label(
             root, text="Google Cloud", bg=var1["bg"], fg=var2["fg"], font=("Courier", 55, "bold"))
         self.title_label.pack(pady=2)
@@ -176,7 +176,7 @@ class FileManagerApp:
         style.configure(
             "Treeview", background=var2["fg"], fieldbackground=var2["fg"], foreground=var1["bg"])
 
-        # File List Treeview
+        
         self.tree = ttk.Treeview(root, columns=(
             "ID", "Name"), show="headings", height=15,)
         self.tree.heading("ID", text="File ID")
@@ -185,7 +185,7 @@ class FileManagerApp:
         self.tree.column("Name", width=300)
         self.tree.pack(pady=5)
 
-        # Buttons Frame
+        
         self.buttons_frame = tk.Frame(root, bg=var1["bg"])
         self.upload_button = tk.Button(self.buttons_frame, text="     Upload File      ", command=self.upload_file,
                                        bg=var1["bg"], fg=var2["fg"], relief="flat", bd=0, highlightthickness=0, font=("Courier", 12))
@@ -196,7 +196,7 @@ class FileManagerApp:
         self.refresh_button = tk.Button(self.buttons_frame, text="       Refresh        ", command=self.refresh_file_list,
                                         bg=var1["bg"], fg=var2["fg"], relief="flat", bd=0, highlightthickness=0, font=("Courier", 12))
 
-        # Pack buttons vertically
+        
         self.upload_button.pack(pady=3)
         self.download_button.pack(pady=3)
         self.delete_button.pack(pady=3)
@@ -204,7 +204,7 @@ class FileManagerApp:
 
         self.buttons_frame.pack(pady=1)
 
-        # Automatically load files when the app starts
+        
         self.list_files()
 
     def upload_file(self):
@@ -303,7 +303,7 @@ class FileManagerApp:
             success, message = self.uploader.delete_file(file_id)
             if success:
                 messagebox.showinfo("Success", message)
-                self.list_files()  # Refresh the file list
+                self.list_files()  
             else:
                 messagebox.showerror("Error", message)
         else:
