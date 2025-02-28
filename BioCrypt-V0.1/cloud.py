@@ -62,7 +62,7 @@ class GoogleDriveUploader:
                 self.creds.refresh(Request())
             else:
                 flow = InstalledAppFlow.from_client_secrets_file(
-                    'client_secret_800944173395-66ueils05h7sf7ois00jvlv0g3276o82.apps.googleusercontent.com.json', SCOPES)
+                    '', SCOPES)
                 self.creds = flow.run_local_server(port=0)
 
             with open('data/token.pickle', 'wb') as token:
@@ -148,7 +148,7 @@ class OTPManager:
             with smtplib.SMTP('smtp.gmail.com', 587) as server:
                 server.starttls()
                 server.login('biocryptprogram@gmail.com',
-                             'nwxv ztza szsi trcx')
+                             '')
                 server.sendmail('your_email@gmail.com',
                                 user_email, message.as_string())
 
