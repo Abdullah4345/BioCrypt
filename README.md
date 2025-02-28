@@ -1,1 +1,4 @@
-make sure all files are in the same foler 
+New hierarchy
+PLEASE FOLLOW THIS HIERARCHY!
+programs (.py) can be left outside.
+.json, .csv, .txt or any kinds of DATA should be saved in the data directory
