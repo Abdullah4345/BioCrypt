@@ -41,37 +41,25 @@ FONT_HEADER = ("Courier", 20, "bold")
 
 
 SENDER_EMAIL = "biocryptprogram@gmail.com"
-SENDER_PASSWORD = "nwxv ztza szsi trcx"
+SENDER_PASSWORD = ""
 
 JSON_MAPPING_FILE = "data/decryption_keys.json"
 
 
 def generate_decryption_key():
-    """
-    Generates a secure decryption key in the format:
-      14 random alphanumeric characters, a dash, then 17 more characters
-    (total length: 32).
-    Example: "qgyadbyu2f6e2d-wqh7dyd7261wgd620"
-    """
+
     characters = string.ascii_letters + string.digits
     rand_str = ''.join(secrets.choice(characters) for _ in range(31))
     return rand_str[:14] + "-" + rand_str[14:]
 
 
 def generate_code():
-    """
-    Generates a random 6-digit numeric code (as a string).
-    Example: "346243"
-    """
+
     return ''.join(secrets.choice(string.digits) for _ in range(6))
 
 
 def update_json_mapping(code, decryption_key):
-    """
-    Updates (or creates) the JSON file mapping the code to the decryption key.
-    Example:
-      { "346243": "qgyadbyu2f6e2d-wqh7dyd7261wgd620" }
-    """
+
     data = {}
     if os.path.exists(JSON_MAPPING_FILE):
         try:
@@ -86,12 +74,7 @@ def update_json_mapping(code, decryption_key):
 
 
 def encrypt_file_in_memory(input_path, decryption_key):
-    """
-    Encrypts the file using AES in CBC mode.
-    The decryption_key (processed via SHA256) derives a 16-byte AES key.
-    A random IV is generated and prepended to the ciphertext.
-    Returns the encrypted data as bytes (without saving to disk).
-    """
+
     aes_key = hashlib.sha256(decryption_key.encode()).digest()[:16]
     iv = get_random_bytes(16)
     cipher = AES.new(aes_key, AES.MODE_CBC, iv)
@@ -104,11 +87,7 @@ def encrypt_file_in_memory(input_path, decryption_key):
 
 
 def decrypt_file(input_path, decryption_key):
-    """
-    Decrypts the AES-encrypted file using the decryption key (processed via SHA256).
-    Assumes the first 16 bytes are the IV.
-    The decrypted file is saved with a ".dec" extension.
-    """
+
     aes_key = hashlib.sha256(decryption_key.encode()).digest()[:16]
     with open(input_path, "rb") as f:
         data = f.read()
@@ -127,10 +106,7 @@ def decrypt_file(input_path, decryption_key):
 
 
 def send_email_with_attachment_data(encrypted_data, original_filename, recipient_email, code):
-    """
-    Sends an email from the fixed sender to the recipient with the encrypted data (as bytes) attached.
-    The email body contains the code so the recipient can later retrieve the decryption key.
-    """
+
     subject = "Your Encrypted File and Retrieval Code"
     body = (
         "Hello,\n\n"
