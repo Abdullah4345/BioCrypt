@@ -1,7 +1,6 @@
 from pathlib import Path
 
-# from tkinter import *
-# Explicit imports to satisfy Flake8
+
 from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage
 
 
@@ -59,13 +58,13 @@ canvas.create_text(
 
 
 canvas.create_text(
-    280,  # X-coordinate (adjust based on canvas width)
-    250.0,  # Y-coordinate
-    anchor="center",  # Center alignment
+    280,  
+    250.0,  
+    anchor="center", 
     text=truncate_text("Young man with curly hair, smiling against a blue background.",1),
     fill="#000000",
     font=("Roboto Condensed ExtraBold Italic", 24 * -1),
-    width=500# Adjust the width to wrap text properly
+    width=500
     ,
 )
 window.resizable(True, True)
