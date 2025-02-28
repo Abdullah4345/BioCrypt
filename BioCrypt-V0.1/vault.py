@@ -62,13 +62,13 @@ def encrypt_file(file_path, user_email):
     # Save the encrypted file to the 'vault' folder
     # Add .enc extension for encrypted files
     file_name = os.path.basename(file_path) + ".enc"
-    encrypted_file_path = os.path.join("vault", file_name)
+    encrypted_file_path = os.path.join("data/vault", file_name)
 
     with open(encrypted_file_path, 'wb') as f:
         f.write(iv + encrypted_data)  # Save IV + encrypted data
 
     # Save the file details to local storage
-    with open("local_storage.txt", "a") as storage_file:
+    with open("data/local_storage.txt", "a") as storage_file:
         storage_file.write(f"{encrypted_file_path} {user_email}\n")
 
     return encrypted_file_path
@@ -161,8 +161,8 @@ def verify_otp(action, file_path, email):
 # Function to refresh the file list display for the user
 def refresh_file_list():
     file_listbox.delete(0, "end")
-    if os.path.exists("vault"):
-        for file_name in os.listdir("vault"):
+    if os.path.exists("data/vault"):
+        for file_name in os.listdir("data/vault"):
             if file_name.endswith(".enc"):  # Show only encrypted files
                 file_listbox.insert("end", file_name)
 
@@ -181,7 +181,7 @@ def file_action(action):
     file_found = False
 
     # Loop through lines in the local storage
-    with open("local_storage.txt", "r") as file:
+    with open("data/local_storage.txt", "r") as file:
         for line in file:
             line = line.strip()  # Remove leading/trailing spaces
 
