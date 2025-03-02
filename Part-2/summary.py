@@ -7,21 +7,66 @@ from tkinter import filedialog ,Tk, Canvas, Entry, Text, Button, PhotoImage, Fra
 import time
 import os
 from pathlib import Path
+import base64
+from cryptography.fernet import Fernet
 
+KEY_FILE = "Part-2/encryption_key.key"
+JSON_FILE = "Part-2/summary.json"
 
-try:
-        with open("summary.json", "r") as file:
-            data = json.load(file)
-except (FileNotFoundError, json.JSONDecodeError):
-            data = {}
-
-def write_json(response,file_name, type):
-    data[file_name] = {"File_type":type, "desc":response}
+def generate_key():
     
-    with open("Part-2/summary.json", "w") as json_file:
-        json.dump(data, json_file, indent=4)
+    return "Ju-Nu7yW9U1CwF2A7Mq5KnJtWfCfPEm7eZdryB6r_Xs="
+        
 
+
+def encrypt_data(data, key):
+    cipher = Fernet(key)
+    return cipher.encrypt(data.encode())
+
+def decrypt_data(encrypted_data, key):
+    cipher = Fernet(key)
+    return cipher.decrypt(encrypted_data).decode()
+
+def load_json():
+    
+    
+    # إذا لم يكن الملف موجودًا، نقوم بإنشائه مشفرًا بمحتوى فارغ
+    if not os.path.exists(JSON_FILE):
+        data = json.dumps({})
+        encrypted_data = encrypt_data(data, key)
+        with open(JSON_FILE, "wb") as file:
+            file.write(encrypted_data)
+        return {}
+    
+    # قراءة البيانات المشفرة وفك تشفيرها
+    with open(JSON_FILE, "rb") as file:
+        encrypted_data = file.read()
+    
+    try:
+        decrypted_data = decrypt_data(encrypted_data, key)
+        return json.loads(decrypted_data)
+    except Exception as e:
+        print("Error decrypting the file:", e)
+        return {}
+
+def save_json(data):
+    encrypted_data = encrypt_data(json.dumps(data, indent=4), key)
+    with open(JSON_FILE, "wb") as file:
+        file.write(encrypted_data)
+
+key = generate_key()
+
+data = load_json()
+
+def write_json(response, file_name, file_type):
+    data[file_name] = {"File_type": file_type, "desc": response}
+    
+    # حفظ البيانات مع التشفير
+    save_json(data)
     print("Response written to summary.json")
+
+
+
 def select_file():
     
 # Create the root window
@@ -50,7 +95,6 @@ def response_img(file_path):
         model="gemini-2.0-flash",
         contents=["summarize it to 10 words only without any another response and be precise in names and info", image]
     )
-    print(response.text)
     write_json(response.text,os.path.splitext(file_path)[0].split("/")[-1],"Img")
 def response_audio(file_path):
     client = genai.Client(api_key="AIzaSyDLpW4BEUngeE7LajD_zWXR8ecC-QyfQd0")
@@ -64,7 +108,6 @@ def response_audio(file_path):
         audio_file,
     ]
 )
-    print(response.text)
     write_json(response.text,os.path.splitext(file_path)[0].split("/")[-1],"Audio")
 def response_video(file_path):
     client = genai.Client(api_key="AIzaSyDLpW4BEUngeE7LajD_zWXR8ecC-QyfQd0")
@@ -85,7 +128,6 @@ def response_video(file_path):
     contents=[
         video_file,
         "summarize it to 10 words only without any another response and be precise in names and info"])
-    print(response.text)
     write_json(response.text,os.path.splitext(file_path)[0].split("/")[-1],"Video")
 def response_file(file_path):
     client = genai.Client(api_key="AIzaSyDLpW4BEUngeE7LajD_zWXR8ecC-QyfQd0")
@@ -95,7 +137,6 @@ def response_file(file_path):
         contents=[
             file,
             "summarize it to 10 words only without any another response and be precise in names and info"])
-    print(response.text)    
     write_json(response.text,os.path.splitext(file_path)[0].split("/")[-1],"Document")
 def Data_Frame(name,type,desc):
 
@@ -198,8 +239,13 @@ def Data_Frame(name,type,desc):
 
     window.resizable(False, False)
     window.mainloop()
-
-
+def get_file_data(file_name):
+    data = load_json()
+    if file_name in data:
+        desc = data[file_name]["desc"]
+        type = data[file_name]["File_type"]
+        Data_Frame(file_name,type,desc)
+    else : pass
 
 
 def main():
@@ -222,3 +268,5 @@ def main():
     else:
         print("Unknown file type.") 
     
+
+get_file_data("video")
