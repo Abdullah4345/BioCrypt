@@ -21,7 +21,7 @@ import threading
 
 def resource_path(relative_path):
     """ Get the absolute path to a resource, works in development and after PyInstaller packaging. """
-    if getattr(sys, 'frozen', False):  
+    if getattr(sys, 'frozen', False):  # Running as a PyInstaller bundle
         base_path = sys._MEIPASS
     else:
         base_path = os.path.abspath(".")
@@ -126,14 +126,14 @@ def update_variables(value):
     print(f"Theme updated - var1: {var1}, var2: {var2}")
 
 
-
+# Put your file inside a "data" folder
 CSV_FILE = resource_path('data/theme_settings.csv')
 
 
 def save_to_csv(var1, var2):
     """ Save data to CSV file. """
     os.makedirs(os.path.dirname(CSV_FILE),
-                exist_ok=True)  
+                exist_ok=True)  # Make sure the folder exists
     with open(CSV_FILE, mode='w', newline='') as file:
         writer = csv.writer(file)
         writer.writerow([var1["bg"], var2["fg"]])
@@ -359,7 +359,8 @@ def check_fingerprint():
         key_hex = hashlib.sha256(key).hexdigest()
         fingerprint_label.config(text=f"Fingerprint ID: {fingerprint_id}")
         key_label.config(text=f"Generated Key (SHA-256): {key_hex}")
-        action_frame.pack(pady=20)
+        # Move action_frame.place here
+        action_frame.place(x=430, y=400, width=300, height=120)
     elif "Fingerprint not found" in data:
         fingerprint_label.config(text="Fingerprint not found. Try again.")
         debug_log("Fingerprint not found. Waiting for retry...",
@@ -441,11 +442,12 @@ root.resizable(False, False)
 root.configure(bg=var1["bg"])
 
 
-
+# Tabs
 notebook = ttk.Notebook(root)
 notebook.pack(fill="both", expand=True)
 
-
+# Tab 1: Encryption/Decryption
+# Set the background color to dark blue
 encryption_frame = tk.Frame(notebook, bg=var1["bg"])
 notebook.add(encryption_frame, text="Encryption/Decryption")
 
@@ -461,6 +463,7 @@ label3 = tk.Label(encryption_frame, text="*̷",
                   fg=var2["fg"], bg=var1["bg"], font=("Arial", 14))
 label3.place(x=600, y=250)
 
+# Additional labels in random spaces, avoiding the middle lane (around x=400, y=300)
 label4 = tk.Label(encryption_frame, text="&̷",
                   fg=var2["fg"], bg=var1["bg"], font=("Arial", 17))
 label4.place(x=100, y=150)
@@ -469,7 +472,7 @@ label5 = tk.Label(encryption_frame, text="(̶",
                   fg=var2["fg"], bg=var1["bg"], font=("Arial", 19))
 label5.place(x=650, y=100)
 
-label6 = tk.Label(encryption_frame, text="^̵͉̦̓̓",
+label6 = tk.Label(encryption_frame, text="^̵͉̦̓̓",
                   fg=var2["fg"], bg=var1["bg"], font=("Arial", 21))
 label6.place(x=200, y=500)
 
@@ -481,7 +484,7 @@ label8 = tk.Label(encryption_frame, text="%͛͘",
                   fg=var2["fg"], bg=var1["bg"], font=("Arial", 14))
 label8.place(x=700, y=400)
 
-label9 = tk.Label(encryption_frame, text="@̈́̒͠",
+label9 = tk.Label(encryption_frame, text="@̈́̒͠",
                   fg=var2["fg"], bg=var1["bg"], font=("Arial", 15))
 label9.place(x=50, y=450)
 
@@ -545,7 +548,7 @@ label26 = tk.Label(encryption_frame, text="$",
                    fg=var2["fg"], bg=var1["bg"], font=("Arial", 13))
 label26.place(x=850, y=100)
 
-label27 = tk.Label(encryption_frame, text="̈́̒͠",
+label27 = tk.Label(encryption_frame, text="̈́̒͠",
                    fg=var2["fg"], bg=var1["bg"], font=("Arial", 14))
 label27.place(x=720, y=250)
 
@@ -577,7 +580,7 @@ label34 = tk.Label(encryption_frame, text="¿",
                    fg=var2["fg"], bg=var1["bg"], font=("Arial", 14))
 label34.place(x=830, y=160)
 
-label35 = tk.Label(encryption_frame, text="̈́̒͠",
+label35 = tk.Label(encryption_frame, text="̈́̒͠",
                    fg=var2["fg"], bg=var1["bg"], font=("Arial", 17))
 label35.place(x=1010, y=400)
 
@@ -626,15 +629,15 @@ label46 = tk.Label(encryption_frame, text="$",
 label46.place(x=700, y=790)
 
 
-
+# Welcome Label
 welcome_label = tk.Label(
     encryption_frame,
-    text='BioCrypt',
+    text='''B́̿͘ɪ̈́͌͐ᴏ̀̈́̾C̾́͝ʀ͑́̕ʏ͒̾͑ᴘ͋͌ᴛ̿̓̒''',
     fg=var2["fg"],
     bg=var1["bg"],
     font=("Courier", 90, "bold")
 )
-
+# welcome_label.pack(pady=60)
 welcome_label.place(x=580, y=100, anchor="center")
 
 
@@ -710,12 +713,14 @@ def open_assistant():
     threading.Thread(target=run_program, daemon=True).start()
 
 
+# Define hover effect function
 
 def on_hover(widget, bg_color):
     widget.bind("<Enter>", lambda e: widget.config(bg=bg_color))
     widget.bind("<Leave>", lambda e: widget.config(bg=var2["fg"]))
 
 
+# **Fingerprint Scan Button (Centered)**
 scan_button = tk.Button(encryption_frame, text="꩜ Scan Fingerprint",
                         relief="flat", bd=0, highlightthickness=0, font=("Courier", 12, "bold"),
                         fg=var1["bg"], bg=var2["fg"], activebackground="#444",
@@ -723,6 +728,7 @@ scan_button = tk.Button(encryption_frame, text="꩜ Scan Fingerprint",
 scan_button.place(x=430, y=350, width=300, height=40)
 
 
+# **Fingerprint & Key Labels (Centered Below)**
 fingerprint_label = tk.Label(encryption_frame, text="👤 Fingerprint ID: None",
                              font=("Courier", 20), bg=var1["bg"], fg=var2["fg"])
 fingerprint_label.place(x=430, y=300)
@@ -731,6 +737,7 @@ key_label = tk.Label(encryption_frame, text="🔒 Generated Key (SHA-256): None"
                      font=("Courier", 12), bg=var1["bg"], fg=var2["fg"])
 key_label.place(x=10000, y=10)
 
+# **Action Frame (Encrypt/Decrypt/File Select)**
 action_frame = tk.Frame(encryption_frame, bg=var1["bg"])
 action_frame.place(x=430,
                    y=400, width=300, height=120)
@@ -759,6 +766,11 @@ block = tk.Button(encryption_frame, text="IPFS",
                   cursor="hand2", command=open_IPFS)
 block.place(x=430, y=475, width=300, height=40)
 
+
+# Extendable Sidebar
+# Set to False to start with the sidebar hidden
+# Extendable Sidebar
+# Set to False to start with the sidebar hidden
 sidebar_visible = tk.BooleanVar(value=False)
 
 
@@ -771,7 +783,7 @@ def toggle_sidebar():
 
 
 sidebar_frame = tk.Frame(encryption_frame, bg=var1["bg"])
-
+# Do not pack the sidebar_frame initially
 
 buttons = [
     ("The Vault", open_vault),
@@ -792,13 +804,17 @@ for text, command in buttons:
     button = tk.Button(sidebar_frame, text=text, command=command, bg=var2["fg"], fg=var1["bg"], font=(
         "Courier", 12), relief="flat", bd=0, highlightthickness=0, width=20, height=2)
     button.pack(fill="x", pady=2)
-    on_hover(button, "#555")  
-
+    on_hover(button, "#555")  # Apply hover effect
+# ...existing code...
 
 toggle_button = tk.Button(encryption_frame, text="☰", command=toggle_sidebar,
                           bg=var2["fg"], fg=var1["bg"], relief="flat", bd=0,
                           highlightthickness=0, font=("Courier", 12), width=1, height=2)
 toggle_button.pack(side="top", anchor="nw", pady=10, padx=10)
+
+# No need to call toggle_sidebar() here as the sidebar is already hidden by default
+
+# Define hover effect function
 
 
 def on_hover(widget, bg_color):
@@ -806,9 +822,16 @@ def on_hover(widget, bg_color):
     widget.bind("<Leave>", lambda e: widget.config(bg=var2["fg"]))
 
 
-
+# Apply hover effect to toggle button
 on_hover(toggle_button, "#555")
 
+# Ensure the sidebar is hidden initially
+# No need to call toggle_sidebar() here as the sidebar is already hidden by default
+
+# ...existing code...
+
+# Ensure the sidebar is hidden initially
+# No need to call toggle_sidebar() here as the sidebar is already hidden by default
 
 # Tab 2: Add Fingerprint
 add_fingerprint_frame = tk.Frame(notebook, bg=var1["bg"])
@@ -826,10 +849,12 @@ add_status_label = tk.Label(add_fingerprint_frame, text="Status: Waiting for com
                             bg=var1["bg"], fg=var2["fg"], font=("Courier", 14))
 add_status_label.pack()
 
-
+# Mini Terminal for Add Fingerprint
 mini_terminal = tk.Text(add_fingerprint_frame,
                         height=50, width=160, bg=var2["fg"])
 mini_terminal.pack(pady=10)
+
+# ...existing code...
 
 # Tab 3: Logs
 log_frame = tk.Frame(notebook, bg=var1["bg"])
@@ -848,7 +873,7 @@ logs_treeview.column("Message", width=600)
 logs_treeview.pack(fill="both", expand=True)
 load_logs()
 
-
+# Apply custom style to Treeview
 style = ttk.Style()
 style.configure("Custom.Treeview",
                 background=var1["bg"], foreground=var2["fg"], fieldbackground=var1["bg"])
