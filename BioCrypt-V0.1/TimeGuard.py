@@ -534,7 +534,7 @@ class ModernGUI(tk.Tk):
     def _send_otp_email(self, email, otp):
         try:
             sender_email = "biocryptprogram@gmail.com"
-            sender_password = "nwxv ztza szsi trcx"
+            sender_password = ""
             smtp_server = "smtp.gmail.com"
             smtp_port = 587
 
