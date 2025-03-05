@@ -3,22 +3,19 @@ import random
 from PIL import Image, ImageTk
 from google import genai
 from google.genai import types
-from tkinter import filedialog ,Tk, Canvas, Entry, Text, Button, PhotoImage, Frame, font
+from tkinter import filedialog ,Tk,Toplevel, Canvas, Entry, Text, Button, PhotoImage, Frame, font, Listbox, Scrollbar, Label, END
 import time
 import os
 from pathlib import Path
 import base64
 from cryptography.fernet import Fernet
 
-KEY_FILE = "Part-2/encryption_key.key"
-JSON_FILE = "Part-2/summary.json"
+JSON_FILE = "BioCrypt-V0.1/data/summary.json"
 
 def generate_key():
     
     return "Ju-Nu7yW9U1CwF2A7Mq5KnJtWfCfPEm7eZdryB6r_Xs="
         
-
-
 def encrypt_data(data, key):
     cipher = Fernet(key)
     return cipher.encrypt(data.encode())
@@ -29,8 +26,6 @@ def decrypt_data(encrypted_data, key):
 
 def load_json():
     
-    
-    # إذا لم يكن الملف موجودًا، نقوم بإنشائه مشفرًا بمحتوى فارغ
     if not os.path.exists(JSON_FILE):
         data = json.dumps({})
         encrypted_data = encrypt_data(data, key)
@@ -38,7 +33,6 @@ def load_json():
             file.write(encrypted_data)
         return {}
     
-    # قراءة البيانات المشفرة وفك تشفيرها
     with open(JSON_FILE, "rb") as file:
         encrypted_data = file.read()
     
@@ -61,7 +55,6 @@ data = load_json()
 def write_json(response, file_name, file_type):
     data[file_name] = {"File_type": file_type, "desc": response}
     
-    # حفظ البيانات مع التشفير
     save_json(data)
     print("Response written to summary.json")
 
@@ -152,13 +145,14 @@ def Data_Frame(name,type,desc):
         return ASSETS_PATH / Path(path)
     
     # Load and place the background image
-    window = Tk()
+    window = Toplevel()
     window.geometry(f"553x{str(int(306+get_frame_size(desc)))}")
     window.configure(bg="#FFFFFF")
     bg_image = Image.open(relative_to_assets("background.jpg"))  # Change to your actual background image
     bg_image = bg_image.resize((553, int(306+get_frame_size(desc))), Image.LANCZOS)  # Resize to fit the window
     bg_photo = ImageTk.PhotoImage(bg_image)
 
+    window.bg_photo = bg_photo
     
 
 
@@ -180,32 +174,11 @@ def Data_Frame(name,type,desc):
     canvas.place(x=0, y=0)
     
         # Set image as background
-    canvas.create_image(0, 0, anchor="nw", image=bg_photo)
+    canvas.create_image(0, 0, anchor="nw", image=window.bg_photo)
 
 
-    image_image_1 = PhotoImage(
-        file=relative_to_assets("image_1.png"))
-    image_1 = canvas.create_image(
-        474.0,
-        125.0,
-        image=image_image_1
-    )
-
-    # canvas.create_rectangle(
-    #     5.0,
-    #     10.0,
-    #     372.0,
-    #     81.0,
-    #     fill="#D9D9D9",
-    #     outline="")
-
-    # canvas.create_rectangle(
-    #     5.0,
-    #     112.0,
-    #     205.0,
-    #     183.0,
-    #     fill="#D9D9D9",
-    #     outline="")
+    image_image_1 = PhotoImage(file=relative_to_assets("image_1.png"))
+    canvas.create_image(474.0, 125.0, image=image_image_1)
 
     canvas.create_text(
         10.0,
@@ -239,34 +212,47 @@ def Data_Frame(name,type,desc):
 
     window.resizable(False, False)
     window.mainloop()
-def get_file_data(file_name):
+
+def on_file_select(event):
+    # Get the selected file name
+    selected_index = event.widget.curselection()
+    if selected_index:
+        file_name = event.widget.get(selected_index)
+        # Access the data associated with the selected file
+        file_data = data.get(file_name, {})
+        # Perform your specific command here
+        Data_Frame(file_name,file_data["File_type"],file_data["desc"])
+def create_window():
+    # Load data from JSON
     data = load_json()
-    if file_name in data:
-        desc = data[file_name]["desc"]
-        type = data[file_name]["File_type"]
-        Data_Frame(file_name,type,desc)
-    else : pass
 
+    # Create the main window
+    root = Tk()
+    root.title("Saved Files")
+    root.geometry("400x300")
 
-def main():
+    # Create a label
+    label = Label(root, text="Saved Files:")
+    label.pack()
 
-    IMAGE_EXTENSIONS = {".png", ".jpeg", ".jpg", ".webp", ".heic", ".heif"}
-    AUDIO_EXTENSIONS = {".wav", ".mp3", ".aiff", ".aac", ".ogg", ".flac"}
-    VIDEO_EXTENSIONS = {".mp4", ".mpeg", ".mov", ".avi", ".x-flv", ".mpg", ".webm", ".wmv", ".3gpp"}
-    DOCUMENT_EXTENSIONS = {".pdf",".js", ".py",".txt", ".html", ".css", ".md", ".csv", ".xml", ".rtf"}
+    # Create a scrollbar
+    scrollbar = Scrollbar(root)
+    scrollbar.pack(side="right", fill="y")
 
-    file_path = select_file()
-    ext = os.path.splitext(file_path)[1].lower()  # Get file extension in lowercase
-    if ext in IMAGE_EXTENSIONS:
-        response_img(file_path)
-    elif ext in AUDIO_EXTENSIONS:
-        response_audio(file_path)
-    elif ext in VIDEO_EXTENSIONS:
-        response_video(file_path)
-    elif ext in DOCUMENT_EXTENSIONS:
-        response_file(file_path)
-    else:
-        print("Unknown file type.") 
-    
+    # Create a listbox
+    listbox = Listbox(root, yscrollcommand=scrollbar.set)
+    listbox.pack(fill="both", expand=True)
+# Populate the listbox with file names
+    for file_name in data.keys():
+        listbox.insert(END, file_name)
 
-get_file_data("video")
+    listbox.bind('<<ListboxSelect>>', on_file_select)
+
+    # Configure the scrollbar
+    scrollbar.config(command=listbox.yview)
+
+    # Start the Tkinter event loop
+    root.mainloop()
+
+if __name__ == "__main__":
+    create_window()
