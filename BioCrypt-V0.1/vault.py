@@ -107,7 +107,7 @@ def send_otp(email):
         with smtplib.SMTP("smtp.gmail.com", 587) as server:
             server.starttls()
             
-            server.login("biocryptprogram@gmail.com", "nwxv ztza szsi trcx")
+            server.login("biocryptprogram@gmail.com", "")
             message = f"Subject: Vault OTP Verification\n\nYour OTP is: {otp_sent}"
             server.sendmail("your_email@gmail.com", email, message)
 
