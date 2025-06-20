@@ -22,7 +22,7 @@ user who inserted his file will be able to retrieve it using OTP sent to him via
 inserted his file will be able to retrieve it using OTP sent to him via E-mail.</p>
 <div style="text-align: center; margin-bottom: 30px;">
   <h2>Chain Space</h2>
-<img src="https://ik.imagekit.io/jyx7871cz/safe-mail.png" alt="Safe Mail" style="width: 40%;">
+<img src="https://ik.imagekit.io/jyx7871cz/ipfs.png" alt="Chain Space" style="width: 40%;">
 </div>
 <p>ChainSpace: This program uses IPFS (InterPlanetary File System) along with the Ethereum Blockchain to deliver one of
 the most secure ways to store an encrypted file, the way IPFS works is that it divides the file to many smaller pieces
@@ -32,7 +32,8 @@ all the servers and create the file back.</p>
 <div style="text-align: center; margin-bottom: 30px;">
 <h2>Safe Mail</h2>
 <div style="text-align: center;">
-  <img src="https://ik.imagekit.io/jyx7871cz/ipfs.png" alt="Chain Space" style="width: 40%;">
+  <img src="https://ik.imagekit.io/jyx7871cz/safe-mail.png" alt="Safe Mail" style="width: 40%;">
+  
 </div>
 
   
